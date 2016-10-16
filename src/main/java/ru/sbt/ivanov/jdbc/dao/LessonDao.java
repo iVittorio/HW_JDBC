@@ -10,11 +10,7 @@ import java.util.List;
  */
 public interface LessonDao {
 
-    List<Student> studentsByLesson(String lesson);
-
     List<Date> studentVisits(String name);
-
-    List<Student> studentsByDate(Date date);
 
     int countOfVisits(String name);
 

@@ -1,7 +1,5 @@
 package ru.sbt.ivanov.jdbc.dao;
 
-import ru.sbt.ivanov.jdbc.domain.Student;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -18,35 +16,6 @@ public class LessonDaoImpl implements LessonDao {
 
     public LessonDaoImpl(Connection connection) {
         this.connection = connection;
-    }
-
-
-    @Override
-    public List<Student> studentsByLesson(String lesson) {
-
-        try {
-            PreparedStatement statement = connection.prepareStatement("SELECT DISTINCT id, FIRSTNAME, SECONDNAME\n" +
-                    "FROM STUDENTS, STUDENTS_VISITS\n" +
-                    "WHERE STUDENTS_VISITS.LESSON_ID IN (SELECT id\n" +
-                    "FROM LESSONS\n" +
-                    "WHERE LESSON_NAME = ?)");
-            statement.setString(1, lesson);
-            ResultSet resultSet = statement.executeQuery();
-
-            List<Student> studentList = new ArrayList<>();
-            while (resultSet.next()) {
-                long id = resultSet.getLong("id");
-                java.lang.String name = resultSet.getString("firstName");
-                java.lang.String surname = resultSet.getString("secondName");
-                studentList.add(new Student(id, name, surname));
-            }
-
-            return studentList;
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-
     }
 
     @Override
@@ -70,35 +39,6 @@ public class LessonDaoImpl implements LessonDao {
                 dateList.add(resultSet.getDate("DATE"));
             }
             return dateList;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    public List<Student> studentsByDate(Date date) {
-        try {
-            PreparedStatement statement = connection.prepareStatement("SELECT id, firstname, secondname\n" +
-                    "FROM STUDENTS\n" +
-                    "WHERE ID IN (\n" +
-                    "  SELECT STUDENT_ID\n" +
-                    "  FROM STUDENTS_VISITS\n" +
-                    "  WHERE LESSON_ID IN (SELECT id\n" +
-                    "                       FROM LESSONS\n" +
-                    "                       WHERE DATE = ?)\n" +
-                    ")");
-            statement.setDate(1, new java.sql.Date(date.getTime()));
-            ResultSet resultSet = statement.executeQuery();
-
-            List<Student> studentList = new ArrayList<>();
-
-            while (resultSet.next()) {
-                long id = resultSet.getLong("id");
-                String name = resultSet.getString("firstName");
-                String surname = resultSet.getString("secondName");
-                studentList.add(new Student(id, name, surname));
-            }
-            return studentList;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

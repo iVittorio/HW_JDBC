@@ -6,6 +6,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 
@@ -34,8 +35,30 @@ public class StudentDaoImpl implements StudentDao {
         return execute("select id, firstName, secondName from Students where secondName  = ?", s -> s.setString(1, surname));
     }
 
+    @Override
+    public List<Student> studentsByDate(Date date) {
+        return execute("SELECT id, firstname, secondname\n" +
+                "FROM STUDENTS\n" +
+                "WHERE ID IN (\n" +
+                "  SELECT STUDENT_ID\n" +
+                "  FROM STUDENTS_VISITS\n" +
+                "  WHERE LESSON_ID IN (SELECT id\n" +
+                "                       FROM LESSONS\n" +
+                "                       WHERE DATE = ?)\n" +
+                ")", s -> s.setDate(1, new java.sql.Date(date.getTime())));
+    }
+
+    @Override
+    public List<Student> studentsByLesson(String lesson) {
+        return execute("SELECT DISTINCT id, FIRSTNAME, SECONDNAME\n" +
+                "FROM STUDENTS, STUDENTS_VISITS\n" +
+                "WHERE STUDENTS_VISITS.LESSON_ID IN (SELECT id\n" +
+                "FROM LESSONS\n" +
+                "WHERE LESSON_NAME = ?)", s -> s.setString(1, lesson));
+    }
+
     private Student getFirst(List<Student> list) {
-     return list.isEmpty() ? null : list.get(0);
+        return list.isEmpty() ? null : list.get(0);
     }
 
     private List<Student> execute(String sql, Consumer<PreparedStatement> consumer) {

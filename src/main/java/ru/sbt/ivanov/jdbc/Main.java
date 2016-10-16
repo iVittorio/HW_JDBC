@@ -29,13 +29,13 @@ public class Main {
 
             List<Student> studentList2 = studentDao.findBySecondName("Alonso");
 
-            List<Student> studentList3 = lessonDao.studentsByLesson("java");
+            List<Student> studentList3 = studentDao.studentsByLesson("java");
 
             List<Date> dateList = lessonDao.studentVisits("Jack");
 
             Date date = dateList.get(0);
 
-            List<Student> studentList4 = lessonDao.studentsByDate(date);
+            List<Student> studentList4 = studentDao.studentsByDate(date);
 
             System.out.println(student);
             System.out.println(studentList1);
